@@ -29,7 +29,7 @@ The project will have two entities: Users and Publications
 ## Utilities
 - Config
 - Database
-- Autentication
+- Authentication
 - Middleware
 - Security
 - Responses
