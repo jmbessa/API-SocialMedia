@@ -16,10 +16,13 @@ type Route struct {
 
 func Configure(r *mux.Router) *mux.Router {
 	routes := userRoutes
+	routes = append(routes, loginRoute)
 
 	for _, route := range routes {
 		r.HandleFunc(route.URI, route.Function).Methods(route.Method)
 	}
+
+	//r.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
 	return r
 }
