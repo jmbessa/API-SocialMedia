@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"api/src/authentication"
 	"api/src/database"
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/responses"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -67,7 +69,6 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, users)
-
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -103,6 +104,17 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userIDToken, err := authentication.ExtractUserID(r)
+	if err != nil {
+		responses.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if userID != userIDToken {
+		responses.Error(w, http.StatusForbidden, errors.New("It is not possible to delete a user other than yours"))
+		return
+	}
+
 	db, err := database.Connect()
 	if err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
@@ -124,6 +136,17 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseUint(params["userID"], 10, 64)
 	if err != nil {
 		responses.Error(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	userIDToken, err := authentication.ExtractUserID(r)
+	if err != nil {
+		responses.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if userID != userIDToken {
+		responses.Error(w, http.StatusForbidden, errors.New("It is not possible to update a user other than yours"))
 		return
 	}
 
@@ -159,4 +182,40 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusNoContent, nil)
+}
+
+func FollowUser(w http.ResponseWriter, r *http.Request) {
+	followerID, err := authentication.ExtractUserID(r)
+	if err != nil {
+		responses.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	parameters := mux.Vars(r)
+	userID, err := strconv.ParseUint(parameters["userId"], 10, 64)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if userID == followerID {
+		responses.Error(w, http.StatusForbidden, errors.New("Is not possible to follow yourself"))
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewUsersRepository(db)
+	if err = repository.Follow(userID, followerID); err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
+
 }
