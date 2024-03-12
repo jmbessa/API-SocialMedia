@@ -178,5 +178,56 @@ func (repository Users) Unfollow(userID, followerID uint64) error {
 }
 
 func (repository Users) SearchFollowers(userID uint64) ([]models.User, error) {
+	rows, err := repository.db.Query(`select u.id, u.name, u.nick, u.email, u,createdAt 
+	from users u, followers f where u.id = f.followerID AND f.userID = ?`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+		if err = rows.Scan(
+			&user.ID,
+			&user.Name,
+			&user.Nick,
+			&user.Email,
+			&user.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+
+}
+
+func (repository Users) SearchFollowing(userID uint64) ([]models.User, error) {
+	rows, err := repository.db.Query(`select u.id, u.name, u.nick, u.email, u,createdAt 
+	from users u, followers f where u.id = f.userID AND f.followerID = ?`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+		if err = rows.Scan(
+			&user.ID,
+			&user.Name,
+			&user.Nick,
+			&user.Email,
+			&user.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
 }
