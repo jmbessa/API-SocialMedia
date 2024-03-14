@@ -6,6 +6,7 @@ import (
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/responses"
+	"api/src/security"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -303,4 +304,63 @@ func SearchFollowing(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, users)
+}
+
+func UpdatePassword(w http.ResponseWriter, r *http.Request) {
+	userIDToken, err := authentication.ExtractUserID(r)
+	if err != nil {
+		responses.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	parameters := mux.Vars(r)
+	userID, err := strconv.ParseUint(parameters["userID"], 10, 64)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if userIDToken != userID {
+		responses.Error(w, http.StatusForbidden, errors.New("it is not possible to update the password of a user other than yours"))
+		return
+	}
+
+	requestBody, err := ioutil.ReadAll(r.Body)
+
+	var password models.Password
+
+	if err = json.Unmarshal(requestBody, &password); err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+	}
+	defer db.Close()
+
+	repository := repositories.NewUsersRepository(db)
+	savedPassword, err := repository.SearchPassword(userID)
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err = security.VerifyPassword(savedPassword, password.Current); err != nil {
+		responses.Error(w, http.StatusUnauthorized, errors.New("the current password does not match the one saved in the bank"))
+		return
+	}
+
+	hashedPassword, err := security.Hash(password.New)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+	}
+
+	if err = repository.UpdatePassword(userID, string(hashedPassword)); err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
 }
