@@ -59,5 +59,53 @@ func (repository Posts) SearchByID(postID uint64) (models.Post, error) {
 	}
 
 	return post, nil
+}
 
+func (repository Posts) Search(userID uint64) ([]models.Post, error) {
+	rows, err := repository.db.Query(`
+	select p.*, u.nick from posts p, users u, followers f
+	where u.id = p.authorId and p.authorId = f.user_id 
+	and u.id = ? or f.follower_id = ?
+	order by 1 desc`, userID, userID)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []models.Post
+
+	for rows.Next() {
+		var post models.Post
+
+		if err = rows.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Content,
+			&post.AuthorID,
+			&post.Likes,
+			&post.CreatedAt,
+			&post.AuthorNick,
+		); err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
+func (repository Posts) Update(postID uint64, post models.Post) error {
+	statement, err := repository.db.Prepare("update posts set title = ?, content = ? where id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(post.Title, post.Content, postID); err != nil {
+		return err
+	}
+
+	return nil
 }

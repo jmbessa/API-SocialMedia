@@ -7,6 +7,7 @@ import (
 	"api/src/repositories"
 	"api/src/responses"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -58,6 +59,27 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 }
 func GetPosts(w http.ResponseWriter, r *http.Request) {
+	userID, err := authentication.ExtractUserID(r)
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewPostsRepository(db)
+	posts, err := repository.Search(userID)
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, posts)
 
 }
 func GetPost(w http.ResponseWriter, r *http.Request) {
@@ -86,8 +108,63 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 
 }
 func UpdatePost(w http.ResponseWriter, r *http.Request) {
+	userID, err := authentication.ExtractUserID(r)
+	if err != nil {
+		responses.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	params := mux.Vars(r)
+	postID, err := strconv.ParseUint(params["postId"], 10, 64)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewPostsRepository(db)
+	postOnBank, err := repository.SearchByID(postID)
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if postOnBank.AuthorID != userID {
+		responses.Error(w, http.StatusInternalServerError, errors.New("It is not possible to update a post that is not yours"))
+		return
+	}
+
+	bodyRequest, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.Error(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	var post models.Post
+	if err = json.Unmarshal(bodyRequest, &post); err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err = post.Prepare(); err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err = repository.Update(postID, post); err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
 
 }
-func DeletePost(w http.ResponseWriter, r *http.Request) {
 
+func DeletePost(w http.ResponseWriter, r *http.Request) {
 }
