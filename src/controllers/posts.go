@@ -247,8 +247,7 @@ func LikePost(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	repository := repositories.NewPostsRepository(db)
-	posts, err := repository.Like(userID)
-	if err != nil {
+	if err = repository.Like(userID); err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
 		return
 	}
