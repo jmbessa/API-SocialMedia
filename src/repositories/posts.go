@@ -109,3 +109,65 @@ func (repository Posts) Update(postID uint64, post models.Post) error {
 
 	return nil
 }
+
+func (repository Posts) Delete(postID uint64) error {
+	statement, err := repository.db.Prepare("delete from posts where id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(postID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repository Posts) SearchByUser(userID uint64) ([]models.Post, error) {
+	rows, err := repository.db.Query(`
+	select p.*, u.nick from posts p, users u
+	where u.id = p.authorId and p.authorId = ?`,
+		userID)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []models.Post
+
+	for rows.Next() {
+		var post models.Post
+
+		if err = rows.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Content,
+			&post.AuthorID,
+			&post.Likes,
+			&post.CreatedAt,
+			&post.AuthorNick,
+		); err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
+func (repository Posts) Like(postID uint64) error {
+	statement, err := repository.db.Prepare("update posts set likes = likes + 1 where id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(postID); err != nil {
+		return err
+	}
+
+	return nil
+}
