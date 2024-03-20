@@ -17,6 +17,16 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// @Summary Create a new user
+// @Description Create a new user with the provided data
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body models.User true "New user data"
+// @Success 201 {object} models.User
+// @Failure 400 {object} object "Bad Request"
+// @Failure 500 {object} object "Internal Server Error"
+// @Router /users [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -52,6 +62,15 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, user)
 }
 
+// @Summary Get all users
+// @Description Retrieve all users, optionally filtered by name or nickname
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user query string false "Name or nickname of the user to filter"
+// @Success 200 {array} models.User
+// @Failure 500 {object} object "Internal Server Error"
+// @Router /users [get]
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	nameOrNick := strings.ToLower(r.URL.Query().Get("user"))
 
@@ -72,6 +91,16 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, users)
 }
 
+// @Summary Get user by ID
+// @Description Retrieve a user by their ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 200 {object} models.User
+// @Failure 400 {object} object "Bad Request"
+// @Failure 500 {object} object "Internal Server Error"
+// @Router /users/{userID} [get]
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	userId, err := strconv.ParseUint(params["userID"], 10, 64)
@@ -97,6 +126,17 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, user)
 }
 
+// @Summary Delete user by ID
+// @Description Delete a user by their ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 204 {object} object
+// @Failure 400 {object} object "Bad Request"
+// @Failure 403 {object} object "Forbidden"
+// @Failure 500 {object} object "Internal Server Error"
+// @Router /users/{userID} [delete]
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	userID, err := strconv.ParseUint(params["userID"], 10, 64)
@@ -132,6 +172,17 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusNoContent, nil)
 }
 
+// @Summary Update user by ID
+// @Description Update a user by their ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 204 {object} object
+// @Failure 400 {object} object "Bad Request"
+// @Failure 403 {object} object "Forbidden"
+// @Failure 500 {object} object "Internal Server Error"
+// @Router /users/{userID} [put]
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	userID, err := strconv.ParseUint(params["userID"], 10, 64)
@@ -185,6 +236,16 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusNoContent, nil)
 }
 
+// @Summary Follow user by ID
+// @Description Follow a user by their ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 204 {object} object
+// @Failure 401 {object} object "Unauthorized"
+// @Failure 500 {object} object "Internal Server Error"
+// @Router /users/{userID}/follow [post]
 func FollowUser(w http.ResponseWriter, r *http.Request) {
 	followerID, err := authentication.ExtractUserID(r)
 	if err != nil {
@@ -220,6 +281,16 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusNoContent, nil)
 }
 
+// @Summary Unfollow user by ID
+// @Description Unfollow a user by their ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 204 {object} object
+// @Failure 401 {object} object "Unauthorized"
+// @Failure 500 {object} object "Internal Server Error"
+// @Router /users/{userID}/unfollow [post]
 func UnfollowUser(w http.ResponseWriter, r *http.Request) {
 	followerID, err := authentication.ExtractUserID(r)
 	if err != nil {
@@ -256,6 +327,16 @@ func UnfollowUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusNoContent, nil)
 }
 
+// @Summary Search followers of user
+// @Description Search followers of a user by their ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 200 {array} models.User
+// @Failure 400 {object} object "Bad Request"
+// @Failure 500 {object} object "Internal Server Error"
+// @Router /users/{userID}/followers [get]
 func SearchFollowers(w http.ResponseWriter, r *http.Request) {
 	parameters := mux.Vars(r)
 
@@ -281,6 +362,16 @@ func SearchFollowers(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, followers)
 }
 
+// @Summary Search following users of user
+// @Description Search users followed by a user by their ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 200 {array} models.User
+// @Failure 400 {object} object "Bad Request"
+// @Failure 500 {object} object "Internal Server Error"
+// @Router /users/{userID}/following [get]
 func SearchFollowing(w http.ResponseWriter, r *http.Request) {
 	parameters := mux.Vars(r)
 
@@ -306,6 +397,17 @@ func SearchFollowing(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, users)
 }
 
+// @Summary Update user password
+// @Description Update the password of a user by their ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 204 {object} object
+// @Failure 400 {object} object "Bad Request"
+// @Failure 401 {object} object "Unauthorized"
+// @Failure 500 {object} object "Internal Server Error"
+// @Router /users/{userID}/update-password [post]
 func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	userIDToken, err := authentication.ExtractUserID(r)
 	if err != nil {

@@ -12,6 +12,17 @@ import (
 	"net/http"
 )
 
+// @Summary Authenticate user
+// @Description Authenticate the user by checking the provided credentials
+// @Tags authentication
+// @Accept json
+// @Produce plain
+// @Param credentials body models.User true "User credentials"
+// @Success 200 {string} string "Authentication token"
+// @Failure 400 {object} object "Bad Request"
+// @Failure 401 {object} object "Unauthorized"
+// @Failure 500 {object} object "Internal Server Error"
+// @Router /login [post]
 func Login(w http.ResponseWriter, r *http.Request) {
 	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {

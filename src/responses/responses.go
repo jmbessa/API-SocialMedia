@@ -12,16 +12,19 @@ func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 
 	if data != nil {
 		if err := json.NewEncoder(w).Encode(data); err != nil {
-			log.Fatal(err)
+			log.Printf("Error encoding JSON: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(struct {
+				Error string `json:"error"`
+			}{"Internal Server Error"})
 		}
 	}
-
 }
 
 func Error(w http.ResponseWriter, statusCode int, err error) {
 	JSON(w, statusCode, struct {
-		Err string `json: "error"`
+		Error string `json:"error"`
 	}{
-		Err: err.Error(),
+		Error: err.Error(),
 	})
 }

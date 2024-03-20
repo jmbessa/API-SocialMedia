@@ -1,0 +1,599 @@
+basePath: /v1
+definitions:
+  models.Post:
+    properties:
+      authorId:
+        type: integer
+      authorNick:
+        type: string
+      content:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: integer
+      likes:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.User:
+    properties:
+      CreatedAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      nick:
+        type: string
+      password:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: RESTful API developed in Golang, intended to serve as the backend for
+    a social networking application
+  title: SocialMedia-API
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate the user by checking the provided credentials
+      parameters:
+      - description: User credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Authentication token
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - authentication
+  /posts:
+    get:
+      description: Retrieve all posts from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - posts
+    post:
+      consumes:
+      - application/json
+      description: Create a new post with the data sent in the request body
+      parameters:
+      - description: Create Post
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/models.Post'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Post'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - posts
+  /posts/{postId}:
+    delete:
+      description: Delete a post by its ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - posts
+    get:
+      description: Retrieve a post by its ID from the database
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Post'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - posts
+    put:
+      consumes:
+      - application/json
+      description: Update a post with the data sent in the request body
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      - description: Post data
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/models.Post'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - posts
+  /posts/{postId}/dislike:
+    post:
+      description: Decrement the likes count for a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - posts
+  /posts/{postId}/like:
+    post:
+      description: Increment the likes count for a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - posts
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all users, optionally filtered by name or nickname
+      parameters:
+      - description: Name or nickname of the user to filter
+        in: query
+        name: user
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided data
+      parameters:
+      - description: New user data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - users
+  /users/{userID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - users
+  /users/{userID}/follow:
+    post:
+      consumes:
+      - application/json
+      description: Follow a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - users
+  /users/{userID}/followers:
+    get:
+      consumes:
+      - application/json
+      description: Search followers of a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - users
+  /users/{userID}/following:
+    get:
+      consumes:
+      - application/json
+      description: Search users followed by a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - users
+  /users/{userID}/unfollow:
+    post:
+      consumes:
+      - application/json
+      description: Unfollow a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - users
+  /users/{userID}/update-password:
+    post:
+      consumes:
+      - application/json
+      description: Update the password of a user by their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - users
+  /users/{userId}/posts:
+    get:
+      description: Retrieve all posts created by a specific user
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      tags:
+      - posts
+swagger: "2.0"

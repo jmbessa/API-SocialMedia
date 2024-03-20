@@ -32,7 +32,5 @@ func Configure(r *mux.Router) *mux.Router {
 		}
 	}
 
-	//r.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
-
 	return r
 }
