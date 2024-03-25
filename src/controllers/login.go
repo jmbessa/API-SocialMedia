@@ -8,6 +8,7 @@ import (
 	"api/src/responses"
 	"api/src/security"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -63,6 +64,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte(token))
+	formattedToken := fmt.Sprintf("Token: %s", token)
+	w.Write([]byte(formattedToken))
 
 }
