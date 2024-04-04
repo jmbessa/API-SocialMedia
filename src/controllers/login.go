@@ -18,7 +18,7 @@ import (
 // @Tags authentication
 // @Accept json
 // @Produce plain
-// @Param credentials body models.User true "User credentials"
+// @Param credentials body models.UserRequest true "User credentials"
 // @Success 200 {string} string "Authentication token"
 // @Failure 400 {object} object "Bad Request"
 // @Failure 401 {object} object "Unauthorized"
@@ -31,7 +31,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user models.User
+	var user models.UserRequest
 
 	if err = json.Unmarshal(requestBody, &user); err != nil {
 		responses.Error(w, http.StatusBadRequest, err)
@@ -64,7 +64,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	formattedToken := fmt.Sprintf("Token: %s", token)
+	formattedToken := fmt.Sprintf("Bearer %s", token)
 	w.Write([]byte(formattedToken))
 
 }

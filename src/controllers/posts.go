@@ -20,7 +20,8 @@ import (
 // @Tags posts
 // @Accept  json
 // @Produce  json
-// @Param        post  body      models.Post  true  "Create Post"
+// @Security Bearer
+// @Param post body string true "Create Post" example({"title": "string", "content": "string"})
 // @Success      201  {object}  models.Post
 // @Failure      400  {object}  object       "Bad Request"
 // @Failure      401  {object}  object       "Unauthorized"
@@ -75,6 +76,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 // @Description Retrieve all posts from the database
 // @Tags posts
 // @Produce json
+// @Security Bearer
 // @Success 200 {array} models.Post
 // @Failure 500 {object} object "Internal Server Error"
 // @Router /posts [get]
@@ -106,6 +108,7 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 // @Description Retrieve a post by its ID from the database
 // @Tags posts
 // @Produce json
+// @Security Bearer
 // @Param postId path int true "Post ID"
 // @Success 200 {object} models.Post
 // @Failure 400 {object} object "Bad Request"
@@ -141,8 +144,9 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 // @Tags posts
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param postId path int true "Post ID"
-// @Param post body models.Post true "Post data"
+// @Param post body string true "Post data" example({"title": "string", "content": "string"})
 // @Success 204 {object} object
 // @Failure 400 {object} object "Bad Request"
 // @Failure 401 {object} object "Unauthorized"
@@ -211,6 +215,7 @@ func UpdatePost(w http.ResponseWriter, r *http.Request) {
 // @Summary Delete a post
 // @Description Delete a post by its ID
 // @Tags posts
+// @Security Bearer
 // @Param postId path int true "Post ID"
 // @Success 204 {object} object
 // @Failure 400 {object} object "Bad Request"
@@ -263,6 +268,7 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 // @Description Retrieve all posts created by a specific user
 // @Tags posts
 // @Produce json
+// @Security Bearer
 // @Param userId path int true "User ID"
 // @Success 200 {array} models.Post
 // @Failure 400 {object} object "Bad Request"
@@ -296,6 +302,7 @@ func GetPostsPerUser(w http.ResponseWriter, r *http.Request) {
 // @Summary Like a post
 // @Description Increment the likes count for a post
 // @Tags posts
+// @Security Bearer
 // @Param postId path int true "Post ID"
 // @Success 204 {object} object
 // @Failure 400 {object} object "Bad Request"
@@ -330,6 +337,7 @@ func LikePost(w http.ResponseWriter, r *http.Request) {
 // @Summary Dislike a post
 // @Description Decrement the likes count for a post
 // @Tags posts
+// @Security Bearer
 // @Param postId path int true "Post ID"
 // @Success 204 {object} object
 // @Failure 400 {object} object "Bad Request"

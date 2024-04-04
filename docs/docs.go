@@ -27,6 +27,7 @@ const docTemplate = `{
                 "tags": [
                     "authentication"
                 ],
+                "summary": "Authenticate user",
                 "parameters": [
                     {
                         "description": "User credentials",
@@ -34,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.UserRequest"
                         }
                     }
                 ],
@@ -68,6 +69,11 @@ const docTemplate = `{
         },
         "/posts": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Retrieve all posts from the database",
                 "produces": [
                     "application/json"
@@ -75,6 +81,7 @@ const docTemplate = `{
                 "tags": [
                     "posts"
                 ],
+                "summary": "Get all posts",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -96,6 +103,9 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
+                        "Bearer": []
+                    },
+                    {
                         "ApiKeyAuth": []
                     }
                 ],
@@ -109,14 +119,16 @@ const docTemplate = `{
                 "tags": [
                     "posts"
                 ],
+                "summary": "Create a new post",
                 "parameters": [
                     {
+                        "example": "{\"title\": \"string\", \"content\": \"string\"}",
                         "description": "Create Post",
                         "name": "post",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Post"
+                            "type": "string"
                         }
                     }
                 ],
@@ -156,6 +168,11 @@ const docTemplate = `{
         },
         "/posts/{postId}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Retrieve a post by its ID from the database",
                 "produces": [
                     "application/json"
@@ -163,6 +180,7 @@ const docTemplate = `{
                 "tags": [
                     "posts"
                 ],
+                "summary": "Get a post by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -196,6 +214,9 @@ const docTemplate = `{
             "put": {
                 "security": [
                     {
+                        "Bearer": []
+                    },
+                    {
                         "ApiKeyAuth": []
                     }
                 ],
@@ -209,6 +230,7 @@ const docTemplate = `{
                 "tags": [
                     "posts"
                 ],
+                "summary": "Update a post",
                 "parameters": [
                     {
                         "type": "integer",
@@ -218,12 +240,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "example": "{\"title\": \"string\", \"content\": \"string\"}",
                         "description": "Post data",
                         "name": "post",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Post"
+                            "type": "string"
                         }
                     }
                 ],
@@ -263,6 +286,9 @@ const docTemplate = `{
             "delete": {
                 "security": [
                     {
+                        "Bearer": []
+                    },
+                    {
                         "ApiKeyAuth": []
                     }
                 ],
@@ -270,6 +296,7 @@ const docTemplate = `{
                 "tags": [
                     "posts"
                 ],
+                "summary": "Delete a post",
                 "parameters": [
                     {
                         "type": "integer",
@@ -311,6 +338,9 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
+                        "Bearer": []
+                    },
+                    {
                         "ApiKeyAuth": []
                     }
                 ],
@@ -318,6 +348,7 @@ const docTemplate = `{
                 "tags": [
                     "posts"
                 ],
+                "summary": "Dislike a post",
                 "parameters": [
                     {
                         "type": "integer",
@@ -353,6 +384,9 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
+                        "Bearer": []
+                    },
+                    {
                         "ApiKeyAuth": []
                     }
                 ],
@@ -360,6 +394,7 @@ const docTemplate = `{
                 "tags": [
                     "posts"
                 ],
+                "summary": "Like a post",
                 "parameters": [
                     {
                         "type": "integer",
@@ -393,6 +428,11 @@ const docTemplate = `{
         },
         "/users": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Retrieve all users, optionally filtered by name or nickname",
                 "consumes": [
                     "application/json"
@@ -403,14 +443,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Name or nickname of the user to filter",
-                        "name": "user",
-                        "in": "query"
-                    }
-                ],
+                "summary": "Get all users",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -430,6 +463,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create a new user with the provided data",
                 "consumes": [
                     "application/json"
@@ -440,6 +478,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
+                "summary": "Create a new user",
                 "parameters": [
                     {
                         "description": "New user data",
@@ -475,6 +514,11 @@ const docTemplate = `{
         },
         "/users/{userID}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Retrieve a user by their ID",
                 "consumes": [
                     "application/json"
@@ -485,6 +529,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
+                "summary": "Get user by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -516,6 +561,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a user by their ID",
                 "consumes": [
                     "application/json"
@@ -526,6 +576,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
+                "summary": "Update user by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -563,6 +614,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete a user by their ID",
                 "consumes": [
                     "application/json"
@@ -573,6 +629,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
+                "summary": "Delete user by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -612,6 +669,11 @@ const docTemplate = `{
         },
         "/users/{userID}/follow": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Follow a user by their ID",
                 "consumes": [
                     "application/json"
@@ -622,6 +684,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
+                "summary": "Follow user by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -655,6 +718,11 @@ const docTemplate = `{
         },
         "/users/{userID}/followers": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Search followers of a user by their ID",
                 "consumes": [
                     "application/json"
@@ -665,6 +733,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
+                "summary": "Search followers of user",
                 "parameters": [
                     {
                         "type": "integer",
@@ -701,6 +770,11 @@ const docTemplate = `{
         },
         "/users/{userID}/following": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Search users followed by a user by their ID",
                 "consumes": [
                     "application/json"
@@ -711,6 +785,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
+                "summary": "Search following users of user",
                 "parameters": [
                     {
                         "type": "integer",
@@ -747,6 +822,11 @@ const docTemplate = `{
         },
         "/users/{userID}/unfollow": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Unfollow a user by their ID",
                 "consumes": [
                     "application/json"
@@ -757,6 +837,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
+                "summary": "Unfollow user by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -790,6 +871,11 @@ const docTemplate = `{
         },
         "/users/{userID}/update-password": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update the password of a user by their ID",
                 "consumes": [
                     "application/json"
@@ -800,6 +886,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
+                "summary": "Update user password",
                 "parameters": [
                     {
                         "type": "integer",
@@ -807,6 +894,15 @@ const docTemplate = `{
                         "name": "userID",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "New password",
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Password"
+                        }
                     }
                 ],
                 "responses": {
@@ -839,6 +935,11 @@ const docTemplate = `{
         },
         "/users/{userId}/posts": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Retrieve all posts created by a specific user",
                 "produces": [
                     "application/json"
@@ -846,6 +947,7 @@ const docTemplate = `{
                 "tags": [
                     "posts"
                 ],
+                "summary": "Get all posts by user",
                 "parameters": [
                     {
                         "type": "integer",
@@ -882,6 +984,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.Password": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "type": "string"
+                },
+                "new": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Post": {
             "type": "object",
             "properties": {
@@ -930,6 +1043,25 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "models.UserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Provide the JWT token with prefix 'Bearer ' in the text box.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -938,7 +1070,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "",
 	Host:             "",
-	BasePath:         "/v1",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "SocialMedia-API",
 	Description:      "RESTful API developed in Golang, intended to serve as the backend for a social networking application",

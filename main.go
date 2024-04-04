@@ -14,7 +14,10 @@ import (
 
 // @title SocialMedia-API
 // @description RESTful API developed in Golang, intended to serve as the backend for a social networking application
-// @BasePath /v1
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Provide the JWT token with prefix 'Bearer ' in the text box.
 func main() {
 	config.Load()
 	r := router.Generate()

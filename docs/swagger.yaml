@@ -1,5 +1,11 @@
-basePath: /v1
 definitions:
+  models.Password:
+    properties:
+      current:
+        type: string
+      new:
+        type: string
+    type: object
   models.Post:
     properties:
       authorId:
@@ -32,6 +38,13 @@ definitions:
       password:
         type: string
     type: object
+  models.UserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
 info:
   contact: {}
   description: RESTful API developed in Golang, intended to serve as the backend for
@@ -49,7 +62,7 @@ paths:
         name: credentials
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.UserRequest'
       produces:
       - text/plain
       responses:
@@ -69,6 +82,7 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      summary: Authenticate user
       tags:
       - authentication
   /posts:
@@ -87,6 +101,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Get all posts
       tags:
       - posts
     post:
@@ -95,11 +112,12 @@ paths:
       description: Create a new post with the data sent in the request body
       parameters:
       - description: Create Post
+        example: '{"title": "string", "content": "string"}'
         in: body
         name: post
         required: true
         schema:
-          $ref: '#/definitions/models.Post'
+          type: string
       produces:
       - application/json
       responses:
@@ -124,7 +142,9 @@ paths:
           schema:
             type: object
       security:
+      - Bearer: []
       - ApiKeyAuth: []
+      summary: Create a new post
       tags:
       - posts
   /posts/{postId}:
@@ -154,7 +174,9 @@ paths:
           schema:
             type: object
       security:
+      - Bearer: []
       - ApiKeyAuth: []
+      summary: Delete a post
       tags:
       - posts
     get:
@@ -180,6 +202,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Get a post by ID
       tags:
       - posts
     put:
@@ -193,11 +218,12 @@ paths:
         required: true
         type: integer
       - description: Post data
+        example: '{"title": "string", "content": "string"}'
         in: body
         name: post
         required: true
         schema:
-          $ref: '#/definitions/models.Post'
+          type: string
       produces:
       - application/json
       responses:
@@ -222,7 +248,9 @@ paths:
           schema:
             type: object
       security:
+      - Bearer: []
       - ApiKeyAuth: []
+      summary: Update a post
       tags:
       - posts
   /posts/{postId}/dislike:
@@ -248,7 +276,9 @@ paths:
           schema:
             type: object
       security:
+      - Bearer: []
       - ApiKeyAuth: []
+      summary: Dislike a post
       tags:
       - posts
   /posts/{postId}/like:
@@ -274,7 +304,9 @@ paths:
           schema:
             type: object
       security:
+      - Bearer: []
       - ApiKeyAuth: []
+      summary: Like a post
       tags:
       - posts
   /users:
@@ -282,11 +314,6 @@ paths:
       consumes:
       - application/json
       description: Retrieve all users, optionally filtered by name or nickname
-      parameters:
-      - description: Name or nickname of the user to filter
-        in: query
-        name: user
-        type: string
       produces:
       - application/json
       responses:
@@ -300,6 +327,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Get all users
       tags:
       - users
     post:
@@ -328,6 +358,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Create a new user
       tags:
       - users
   /users/{userID}:
@@ -360,6 +393,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Delete user by ID
       tags:
       - users
     get:
@@ -387,6 +423,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Get user by ID
       tags:
       - users
     put:
@@ -418,6 +457,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Update user by ID
       tags:
       - users
   /users/{userID}/follow:
@@ -446,6 +488,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Follow user by ID
       tags:
       - users
   /users/{userID}/followers:
@@ -476,6 +521,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Search followers of user
       tags:
       - users
   /users/{userID}/following:
@@ -506,6 +554,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Search following users of user
       tags:
       - users
   /users/{userID}/unfollow:
@@ -534,6 +585,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Unfollow user by ID
       tags:
       - users
   /users/{userID}/update-password:
@@ -547,6 +601,12 @@ paths:
         name: userID
         required: true
         type: integer
+      - description: New password
+        in: body
+        name: password
+        required: true
+        schema:
+          $ref: '#/definitions/models.Password'
       produces:
       - application/json
       responses:
@@ -566,6 +626,9 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Update user password
       tags:
       - users
   /users/{userId}/posts:
@@ -594,6 +657,15 @@ paths:
           description: Internal Server Error
           schema:
             type: object
+      security:
+      - Bearer: []
+      summary: Get all posts by user
       tags:
       - posts
+securityDefinitions:
+  Bearer:
+    description: Provide the JWT token with prefix 'Bearer ' in the text box.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

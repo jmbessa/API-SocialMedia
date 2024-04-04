@@ -22,6 +22,7 @@ import (
 // @Tags users
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param user body models.User true "New user data"
 // @Success 201 {object} models.User
 // @Failure 400 {object} object "Bad Request"
@@ -67,7 +68,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param user query string false "Name or nickname of the user to filter"
+// @Security Bearer
 // @Success 200 {array} models.User
 // @Failure 500 {object} object "Internal Server Error"
 // @Router /users [get]
@@ -96,6 +97,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param userID path int true "User ID"
 // @Success 200 {object} models.User
 // @Failure 400 {object} object "Bad Request"
@@ -131,6 +133,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param userID path int true "User ID"
 // @Success 204 {object} object
 // @Failure 400 {object} object "Bad Request"
@@ -177,6 +180,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param userID path int true "User ID"
 // @Success 204 {object} object
 // @Failure 400 {object} object "Bad Request"
@@ -241,6 +245,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param userID path int true "User ID"
 // @Success 204 {object} object
 // @Failure 401 {object} object "Unauthorized"
@@ -286,6 +291,7 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param userID path int true "User ID"
 // @Success 204 {object} object
 // @Failure 401 {object} object "Unauthorized"
@@ -332,6 +338,7 @@ func UnfollowUser(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param userID path int true "User ID"
 // @Success 200 {array} models.User
 // @Failure 400 {object} object "Bad Request"
@@ -367,6 +374,7 @@ func SearchFollowers(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param userID path int true "User ID"
 // @Success 200 {array} models.User
 // @Failure 400 {object} object "Bad Request"
@@ -402,7 +410,9 @@ func SearchFollowing(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param userID path int true "User ID"
+// @Param password body models.Password true "New password" example({"new": "string", "current": "string"})
 // @Success 204 {object} object
 // @Failure 400 {object} object "Bad Request"
 // @Failure 401 {object} object "Unauthorized"
