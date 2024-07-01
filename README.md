@@ -6,5 +6,5 @@ Este repositório tem por objetivo o compartilhamento de documentos públicos da
 ## Instruções de Instalação e Uso
 - Clone o repositório.
 - Configure o banco de dados e armazene as informações no arquivo de configuração.
-- Rode a aplicação com go run main.go.
+- Rode a aplicação com ´´´go run main.go´´´
 - Acesse a aplicação em http://localhost:5000/swagger ou utilize softwares como Postman para envio de requisições para a API.
